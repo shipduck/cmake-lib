@@ -3,6 +3,8 @@ MACRO( MSVC_SET_PCH Target PrecompiledHeader PrecompiledSource)
   IF( MSVC )
     SET(PrecompiledBinary "\$(IntDir)\$(TargetName).pch")
     SET(Sources ${${SourcesVar}})
+	STRING(REGEX REPLACE "/Zm[0-9]+ *" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm500" CACHE STRING "" FORCE)
     GET_FILENAME_COMPONENT(PrecompiledBasename
        ${PrecompiledHeader} NAME)
     GET_SOURCE_FILE_PROPERTY(OLD_COMPILE_FLAGS ${PrecompiledSource} COMPILE_FLAGS)
