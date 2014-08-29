@@ -1,27 +1,37 @@
-# MSVC PrecompiledHeader 
-MACRO( MSVC_SET_PCH Target PrecompiledHeader PrecompiledSource)
+INCLUDE( CMakeParseArguments )
+INCLUDE( cmake_lib_utils )
+
+# PrecompiledHeader 
+FUNCTION( SET_PCH )
+  SET( OPTIONS  )
+  SET( ONE_VALUE_ARG TARGET HEADER SOURCE )
+  SET( MULTI_VALUE_ARGS )
+  CMAKE_PARSE_ARGUMENTS( _PCH "${OPTIONS}" "${ONE_VALUE_ARG}" "${MULTI_VALUE_ARGS}" ${ARGN} )
+
   IF( MSVC )
     SET(PrecompiledBinary "\$(IntDir)\$(TargetName).pch")
     SET(Sources ${${SourcesVar}})
 	STRING(REGEX REPLACE "/Zm[0-9]+ *" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm500" CACHE STRING "" FORCE)
-    GET_FILENAME_COMPONENT(PrecompiledBasename
-       ${PrecompiledHeader} NAME)
-    GET_SOURCE_FILE_PROPERTY(OLD_COMPILE_FLAGS ${PrecompiledSource} COMPILE_FLAGS)
+    GET_FILENAME_COMPONENT(PrecompiledBasename ${_PCH_HEADER} NAME)
+    GET_SOURCE_FILE_PROPERTY(OLD_COMPILE_FLAGS ${_PCH_SOURCE} COMPILE_FLAGS)
 
-    SET_PROPERTY(SOURCE ${PrecompiledSource}
+    SET_PROPERTY(SOURCE ${_PCH_SOURCE}
       APPEND
       PROPERTY
         COMPILE_FLAGS
           "/Yc\"${PrecompiledBasename}\" /Fp\"${PrecompiledBinary}\"")
-    SET_PROPERTY(SOURCE ${PrecompiledSource}
+    SET_PROPERTY(SOURCE ${_PCH_SOURCE}
       APPEND
       PROPERTY
         OBJECT_OUTPUTS "${PrecompiledBinary}") 
-    SET_PROPERTY(TARGET ${Target}
+    SET_PROPERTY(TARGET ${_PCH_TARGET}
       APPEND
       PROPERTY
         COMPILE_FLAGS
           "/Yu\"${PrecompiledBasename}\"")
-  ENDIF( MSVC )
-ENDMACRO( MSVC_SET_PCH )
+  ELSEIF( XCODE_VERSION )
+    SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PRECOMPILE_PREFIX_HEADER YES )
+    SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PREFIX_HEADER ${_PCH_HEADER} )
+  ENDIF( )
+ENDFUNCTION( SET_PCH )
