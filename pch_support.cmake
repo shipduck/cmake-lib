@@ -1,7 +1,7 @@
 INCLUDE( CMakeParseArguments )
 INCLUDE( cmake_lib_utils )
 
-# PrecompiledHeader 
+# PrecompiledHeader
 FUNCTION( SET_PCH )
   SET( OPTIONS CXX )
   SET( ONE_VALUE_ARG TARGET HEADER SOURCE )
@@ -38,6 +38,8 @@ FUNCTION( SET_PCH )
         COMPILE_FLAGS
           "/Yu\"${PrecompiledBasename}\"")
   ELSEIF( XCODE_VERSION )
+    # ref some .xcodeproj/project.pbxproj file
+
     SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PRECOMPILE_PREFIX_HEADER YES )
     SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PREFIX_HEADER ${_PCH_HEADER} )
   ELSEIF( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
