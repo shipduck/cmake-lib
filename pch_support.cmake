@@ -61,5 +61,23 @@ FUNCTION( SET_PCH )
       "${_PCH_TARGET}_pch"
       DEPENDS "${_PCH_HEADER}.pch" )
     ADD_DEPENDENCIES( ${_PCH_TARGET} "${_PCH_TARGET}_pch" )
+  ELSEIF( GCC_VERSION )
+    # https://gcc.gnu.org/onlinedocs/gcc/Precompiled-Headers.html
+    # http://stackoverflow.com/questions/58841/precompiled-headers-with-gcc
+
+    IF( NOT _PCH_CXX )
+      SET( COMPILER_OPTION  )
+    ELSE(  )
+      SET( COMPILER_OPTION -x c++-header )
+    ENDIF(  )
+
+    ADD_CUSTOM_COMMAND(
+      OUTPUT "${_PCH_TARGET}.gch"
+      COMMAND ${COMPILER} ${COMPILER_OPTION} ${_PCH_HEADER}
+      DEPENDS ${_PCH_HEADER} )
+    ADD_CUSTOM_TARGET(
+      "${_PCH_TARGET}_pch"
+      DEPENDS "${_PCH_HEADER}.gch" )
+    ADD_DEPENDENCIES( ${_PCH_TARGET} "${_PCH_TARGET}_pch" )
   ENDIF( )
 ENDFUNCTION( SET_PCH )
