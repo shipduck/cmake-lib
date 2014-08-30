@@ -9,7 +9,7 @@ FUNCTION( SET_PCH )
   CMAKE_PARSE_ARGUMENTS( _PCH "${OPTIONS}" "${ONE_VALUE_ARG}" "${MULTI_VALUE_ARGS}" ${ARGN} )
 
   GET_GCC_VERSION(  )
-  IF( _PCH_CXX )
+  IF( NOT _PCH_CXX )
     SET( COMPILER ${CMAKE_C_COMPILER} )
   ELSE(  )
     SET( COMPILER ${CMAKE_CXX_COMPILER} )
@@ -46,7 +46,7 @@ FUNCTION( SET_PCH )
     # http://clang.llvm.org/docs/PCHInternals.html
     # http://clang.llvm.org/docs/UsersManual.html#usersmanual-precompiled-headers
 
-    IF( _PCH_CXX )
+    IF( NOT _PCH_CXX )
       SET( COMPILER_OPTION  )
     ELSE(  )
       SET( COMPILER_OPTION -x c++-header )
