@@ -3,10 +3,17 @@ INCLUDE( cmake_lib_utils )
 
 # PrecompiledHeader 
 FUNCTION( SET_PCH )
-  SET( OPTIONS  )
+  SET( OPTIONS CXX )
   SET( ONE_VALUE_ARG TARGET HEADER SOURCE )
   SET( MULTI_VALUE_ARGS )
   CMAKE_PARSE_ARGUMENTS( _PCH "${OPTIONS}" "${ONE_VALUE_ARG}" "${MULTI_VALUE_ARGS}" ${ARGN} )
+
+  GET_GCC_VERSION(  )
+  IF( _PCH_CXX )
+    SET( COMPILER ${CMAKE_C_COMPILER} )
+  ELSE(  )
+    SET( COMPILER ${CMAKE_CXX_COMPILER} )
+  ENDIF(  )
 
   IF( MSVC )
     SET(PrecompiledBinary "\$(IntDir)\$(TargetName).pch")
@@ -33,5 +40,24 @@ FUNCTION( SET_PCH )
   ELSEIF( XCODE_VERSION )
     SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PRECOMPILE_PREFIX_HEADER YES )
     SET_XCODE_PROPERTY( ${_PCH_TARGET} GCC_PREFIX_HEADER ${_PCH_HEADER} )
+  ELSEIF( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+    # http://clang.llvm.org/docs/PCHInternals.html
+    # http://clang.llvm.org/docs/UsersManual.html#usersmanual-precompiled-headers
+
+    IF( _PCH_CXX )
+      SET( COMPILER_OPTION  )
+    ELSE(  )
+      SET( COMPILER_OPTION -x c++-header )
+    ENDIF(  )
+
+    ADD_CUSTOM_COMMAND(
+      OUTPUT "${_PCH_HEADER}.pch"
+      COMMAND ${COMPILER} ${COMPILER_OPTION} ${_PCH_HEADER} -o ${_PCH_HEADER}.pch
+      DEPENDS ${_PCH_HEADER} )
+    SET_PROPERTY( TARGET ${_PCH_TARGET} APPEND_STRING PROPERTY COMPILE_FLAGS " -include ${_PCH_HEADER}" )
+    ADD_CUSTOM_TARGET(
+      "${_PCH_TARGET}_pch"
+      DEPENDS "${_PCH_HEADER}.pch" )
+    ADD_DEPENDENCIES( ${_PCH_TARGET} "${_PCH_TARGET}_pch" )
   ENDIF( )
 ENDFUNCTION( SET_PCH )
