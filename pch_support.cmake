@@ -16,27 +16,27 @@ FUNCTION( SET_PCH )
   ENDIF(  )
 
   IF( MSVC )
-    SET(PrecompiledBinary "\$(IntDir)\$(TargetName).pch")
-    SET(Sources ${${SourcesVar}})
-	STRING(REGEX REPLACE "/Zm[0-9]+ *" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm500" CACHE STRING "" FORCE)
-    GET_FILENAME_COMPONENT(PrecompiledBasename ${_PCH_HEADER} NAME)
-    GET_SOURCE_FILE_PROPERTY(OLD_COMPILE_FLAGS ${_PCH_SOURCE} COMPILE_FLAGS)
+    SET( PrecompiledBinary "\$(IntDir)\$(TargetName).pch" )
+    SET( Sources ${${SourcesVar}} )
+    STRING( REGEX REPLACE "/Zm[0-9]+ *" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} )
+    SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zm500" CACHE STRING "" FORCE )
+    GET_FILENAME_COMPONENT( PrecompiledBasename ${_PCH_HEADER} NAME )
+    GET_SOURCE_FILE_PROPERTY( OLD_COMPILE_FLAGS ${_PCH_SOURCE} COMPILE_FLAGS )
 
-    SET_PROPERTY(SOURCE ${_PCH_SOURCE}
+    SET_PROPERTY( SOURCE ${_PCH_SOURCE}
       APPEND
       PROPERTY
         COMPILE_FLAGS
-          "/Yc\"${PrecompiledBasename}\" /Fp\"${PrecompiledBinary}\"")
-    SET_PROPERTY(SOURCE ${_PCH_SOURCE}
+          "/Yc\"${PrecompiledBasename}\" /Fp\"${PrecompiledBinary}\"" )
+    SET_PROPERTY( SOURCE ${_PCH_SOURCE}
       APPEND
       PROPERTY
-        OBJECT_OUTPUTS "${PrecompiledBinary}") 
-    SET_PROPERTY(TARGET ${_PCH_TARGET}
+        OBJECT_OUTPUTS "${PrecompiledBinary}" ) 
+    SET_PROPERTY( TARGET ${_PCH_TARGET}
       APPEND
       PROPERTY
         COMPILE_FLAGS
-          "/Yu\"${PrecompiledBasename}\"")
+          "/Yu\"${PrecompiledBasename}\"" )
   ELSEIF( XCODE_VERSION )
     # ref some .xcodeproj/project.pbxproj file
 
