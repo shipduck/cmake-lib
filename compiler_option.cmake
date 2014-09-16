@@ -14,6 +14,11 @@ FUNCTION( USE_CPP11 )
       MESSAGE( SEND_ERROR "Visual Studio version is too low to use C++11 standard" )
     ENDIF(  )
   ELSEIF( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+    # ref: http://clang.llvm.org/cxx_status.html
+    IF( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 2.9.0 )
+      MESSAGE( SEND_ERROR "Clang version is too low to use C++11 standard features : Clang(${CMAKE_CXX_COMPILER_VERSION})" )
+    ENDIF(  )
+
     IF( APPLE )
       IF( _CPP11_MODE STREQUAL "TARGET" )
         IF( XCODE_VERSION )
