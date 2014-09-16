@@ -10,6 +10,7 @@ FUNCTION( USE_CPP11 )
   SET( _CPP11_TARGET ${_CPP11_UNPARSED_ARGUMENTS} )
 
   IF( CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" )
+    # ref: http://msdn.microsoft.com/en-us/library/hh567368.aspx#corelanguagetable
     IF( MSVC_VERSION LESS 1700 )
       MESSAGE( SEND_ERROR "Visual Studio version is too low to use C++11 standard" )
     ENDIF(  )
@@ -32,6 +33,7 @@ FUNCTION( USE_CPP11 )
       SET_PROPERTY( ${_CPP11_MODE} ${_CPP11_TARGET} APPEND_STRING PROPERTY COMPILE_FLAGS " -std=c++11" )
     ENDIF(  )
   ELSEIF( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+    # ref: https://gcc.gnu.org/projects/cxx0x.html
     IF( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.3 )
       MESSAGE( SEND_ERROR "GCC version is too low to use C++11 standard features : GCC(${CMAKE_CXX_COMPILER_VERSION})" )
     ELSEIF( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.7 )
